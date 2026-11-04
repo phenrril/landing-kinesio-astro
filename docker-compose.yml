@@ -1,0 +1,16 @@
+name: somatic
+
+# Detrás de Caddy: no publica puertos al host, solo se conecta a la red del proxy.
+networks:
+  edge_net:
+    external: true
+    name: public_network
+
+services:
+  somatic:
+    build: .
+    container_name: somatic
+    mem_limit: 128m
+    networks:
+      - edge_net
+    restart: unless-stopped
