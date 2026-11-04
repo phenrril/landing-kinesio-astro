@@ -131,15 +131,11 @@ const links = [
       >Saltar al contenido</a
     >
 
-    <header class="fixed inset-x-0 top-0 z-40 flex justify-center px-4">
+    <header class="fixed inset-x-0 top-0 z-40 hidden justify-center px-4 sm:flex">
       <nav
         aria-label="Principal"
         class="mx-auto mt-6 flex w-max max-w-full items-center gap-2 rounded-full border border-line bg-ink/80 px-4 py-2 backdrop-blur-3xl"
       >
-        <a href="#" class="mr-2 flex flex-col leading-none" aria-label="Somatic, inicio">
-          <span class="text-base font-semibold tracking-[0.2em]">SOMATIC</span>
-          <span class="text-[10px] tracking-[0.3em] text-accent">kinesiología</span>
-        </a>
         {links.map((l) => (
           <a
             href={l.href}
