@@ -83,13 +83,13 @@ const team: { id: string; name: string; title: string; first: string; mat: strin
         p: [
           'Evaluación, tratamiento y seguimiento individualizado de lesiones musculoesqueléticas, alteraciones del movimiento y procesos de recuperación.',
           'El abordaje se orienta a disminuir el dolor, recuperar capacidades funcionales y favorecer la autonomía, mediante intervenciones adaptadas a las necesidades de cada paciente.',
+          'Consultar por kinesiología domiciliaria',
         ],
       },
     },
   },
 ];
 
-const coverageNote = 'Obras sociales y particulares. La cobertura depende del profesional y del plan: consultanos por WhatsApp y te confirmamos.';
 const cartilla = 'Trabajamos con amplia cartilla de obras sociales y prepagas con convenio a través del Colegio de Kinesiólogos, 2ª circunscripción, Rosario. Algunas: IAPOS, AMR Salud, Avalian, Federada Salud, Jerárquicos, Swiss Medical, Sancor Salud, Prevención Salud, Británica Salud, Ospoc, Caja de Ingenieros, Ciencias Económicas, Dasuten, entre otras.';
 
 const space = [
@@ -213,7 +213,6 @@ const faq = [
                 {p.bio.area.p.map((t) => <p>{t}</p>)}
               </div>
             )}
-            <p class="mt-3 text-sm text-white/80">{coverageNote}</p>
             {p.own && p.own.split('\n').map((t) => <p class="mt-2 text-sm text-white/80">{t}</p>)}
             <span class="mt-auto pt-6">
               <span class="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent px-5 text-base font-semibold text-ink [text-shadow:none] shadow-[0_0_28px_rgb(159_214_192/0.5)] ring-1 ring-white/50 transition-all duration-700 ease-fluid group-hover:shadow-[0_0_44px_rgb(159_214_192/0.8)] group-active:scale-95">
