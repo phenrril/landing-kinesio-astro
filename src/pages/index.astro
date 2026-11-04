@@ -1,0 +1,336 @@
+---
+import Base from '../layouts/Base.astro';
+import World from '../components/World.astro';
+
+const treatments: { t: string; sub?: string; d: string; lead?: string; items?: string[]; after?: string; img?: string; alt?: string; photo?: boolean }[] = [
+  {
+    t: 'Fisioterapia',
+    d: 'Aplicación de agentes físicos con fines terapéuticos.',
+    after: 'Magnetoterapia, Láser, Ultrasonido, Electroterapia, entre otros.',
+    img: '/img/fisioterapia.webp',
+    alt: 'Box de fisioterapia con camillas y estantes con elementos de rehabilitación',
+    photo: true,
+  },
+  {
+    t: 'Kinesioterapia',
+    d: 'Rehabilitación integral del movimiento. Evaluación, tratamiento manual y reeducación funcional para recuperar la movilidad, aliviar el dolor y prevenir recidivas.',
+    img: '/img/kinesioterapia.webp',
+    alt: 'Box de atención con camilla y carrito con equipos',
+    photo: true,
+  },
+  {
+    t: 'Drenaje Linfático – Método Leduc',
+    d: 'Tratamiento del:',
+    items: ['Linfedema / Lipedema', 'Várices', 'Celulitis', 'Piernas cansadas', 'Edemas postoperatorios', 'Embarazo'],
+    after: 'Complementamos el tratamiento con presoterapia y vendaje cuando es necesario.',
+    img: '/img/drenaje.webp',
+    alt: 'Ilustración del sistema linfático de las piernas',
+  },
+  {
+    t: 'Suelo Pélvico',
+    sub: 'Kinesiología integral del suelo pélvico femenino',
+    d: 'Rehabilitación en Uroginecología, Obstetricia y Coloproctología.',
+    lead: 'Abordaje de:',
+    items: [
+      'Incontinencia urinaria de esfuerzo, de urgencia y mixta',
+      'Prolapso, urgencia miccional',
+      'Dolor pélvico / Dispareunia',
+      'Pre y post parto',
+      'Estreñimiento y disfunciones anorrectales',
+      'Pre y post quirúrgico uroginecológico',
+    ],
+    img: '/img/suelo-pelvico.webp',
+    alt: 'Ilustración de los músculos del suelo pélvico',
+  },
+  {
+    t: 'Terapia Manual',
+    d: 'Abordaje terapéutico basado en la evaluación y el tratamiento de disfunciones del sistema musculoesquelético mediante técnicas específicas de intervención manual.',
+    img: '/img/terapia-manual.webp',
+    alt: 'Boxes de atención con camillas y cortinas',
+    photo: true,
+  },
+  { t: 'Prevención de lesiones', d: '' },
+  {
+    t: 'Gimnasio Terapéutico',
+    d: 'Un espacio destinado al ejercicio terapéutico, el reacondicionamiento físico y la recuperación de capacidades funcionales.',
+    after:
+      'A través de una planificación progresiva e individualizada, se busca facilitar la transición entre la rehabilitación y el entrenamiento, acompañando tanto a quienes desean retomar la actividad física después de una lesión como a quienes necesitan comenzar a entrenar con supervisión profesional.',
+  },
+];
+
+// datos de la placa y la puerta del local
+const team: { id: string; name: string; title: string; first: string; mat: string; phone: string; wa: string; own: string; lines?: string[]; bio?: { h: string; p: string[]; area: { h: string; p: string[] } } }[] = [
+  { id: 'ana', name: 'Ana M. Argüello', title: 'Lic. en Kinesiología y Fisiatría', first: 'Ana', mat: 'Mat. 504', phone: '341 560-2777', wa: '5493415602777', own: 'Convenio propio: O.S.U.N.R., PAMI y Medicina Esencial (BLANCO (incluye BL, BL_, BL_., BL__, BL___, BLA) 301 (100 / 202N / 301N / BLN), PLAN E (todos), MTA (todos, 501N y 601N), Esencial.AR).\nPrestadora de discapacidad',
+    lines: ['Drenaje Linfático | Suelo Pélvico | Geriatría', 'Consultar por kinesiología domiciliaria'],
+  },
+  {
+    id: 'ivan',
+    name: 'Lic. Iván Zaballa',
+    title: 'Lic. en Kinesiología y Fisiatría · Profesor de Educación Física',
+    first: 'Iván',
+    mat: 'Mat. 3505/2',
+    phone: '3464 55-3347',
+    wa: '5493464553347',
+    own: '',
+    bio: {
+      h: 'Kinesiología, movimiento y acompañamiento personalizado',
+      p: [
+        'Trabajo desde un enfoque integral, acompañando a cada persona según su historia, sus necesidades y sus objetivos.',
+        'Mi propuesta combina la atención kinésica, la terapia manual y el ejercicio terapéutico, integrando diferentes estrategias de intervención para favorecer la recuperación funcional, prevenir lesiones y mejorar la calidad del movimiento.',
+      ],
+      area: {
+        h: 'Atención kinésica y rehabilitación funcional',
+        p: [
+          'Evaluación, tratamiento y seguimiento individualizado de lesiones musculoesqueléticas, alteraciones del movimiento y procesos de recuperación.',
+          'El abordaje se orienta a disminuir el dolor, recuperar capacidades funcionales y favorecer la autonomía, mediante intervenciones adaptadas a las necesidades de cada paciente.',
+        ],
+      },
+    },
+  },
+];
+
+const coverageNote = 'Obras sociales y particulares. La cobertura depende del profesional y del plan: consultanos por WhatsApp y te confirmamos.';
+const cartilla = 'Trabajamos con amplia cartilla de obras sociales y prepagas con convenio a través del Colegio de Kinesiólogos, 2ª circunscripción, Rosario. Algunas: IAPOS, AMR Salud, Avalian, Federada Salud, Jerárquicos, Swiss Medical, Sancor Salud, Prevención Salud, Británica Salud, Ospoc, Caja de Ingenieros, Ciencias Económicas, Dasuten, entre otras.';
+
+const space = [
+  { src: '/img/pasillo.webp', alt: 'Pasillo de entrada hacia la recepción, con el logo de Somatic en la pared y en el felpudo' },
+  { src: '/img/camilla.webp', alt: 'Box de atención con camilla y cortina' },
+  { src: '/img/gimnasio.webp', alt: 'Gimnasio terapéutico con colchonetas, kettlebells y espejo' },
+  { src: '/img/box.webp', alt: 'Sala con estantes de elementos de rehabilitación y box con camilla' },
+  { src: '/img/recepcion.webp', alt: 'Recepción con el logo de Somatic y flores sobre el mostrador' },
+  { src: '/img/entrada.webp', alt: 'Puerta de entrada con el número 1795 y, al fondo, la recepción con el logo de Somatic' },
+];
+
+const faq = [
+  { q: '¿Atienden con obra social?', a: `Sí, atendemos con obras sociales y de forma particular. ${cartilla} Escribinos con el nombre de tu cobertura y te confirmamos.` },
+  { q: '¿Necesito orden médica?', a: 'Si venís con obra social, en general sí: la mayoría la pide para autorizar las sesiones. Si venís particular, podés empezar sin orden.' },
+  { q: '¿Qué llevo a la primera sesión?', a: 'Ropa cómoda, los estudios que tengas (radiografías, ecografías, resonancias) y la orden médica si usás obra social.' },
+  { q: '¿Cómo se confirma el turno?', a: 'Elegís al profesional y se abre su WhatsApp. El turno queda firme cuando te responde confirmando día y hora.' },
+];
+
+---
+
+<Base
+  title="Somatic Kinesiología. Fisioterapia, suelo pélvico y gimnasio terapéutico"
+  description="Kinesiología y fisiatría con obra social o particular: fisioterapia, drenaje linfático, suelo pélvico, terapia manual y gimnasio terapéutico. Pedí tu turno por WhatsApp."
+>
+  <World />
+
+  <!-- HERO -->
+  <!-- del lado de la puerta; al scrollear se va hacia la derecha (JS) -->
+  <section class="relative isolate flex min-h-svh items-center justify-end px-4 pt-24 pb-16">
+    <div id="hero-text" class="w-full max-w-[680px] sm:pr-8 sm:text-right lg:pr-16">
+      <h1 class="reveal glass-text text-[2.75rem] leading-[1.05] font-semibold tracking-tight sm:text-7xl">
+        SOMATIC <span class="font-display font-normal italic text-accent">Kinesiología</span>
+      </h1>
+      <p class="reveal glass-text mt-6 text-lg font-semibold text-white sm:text-xl">
+        Fisioterapia | Drenaje Linfático | Suelo Pélvico | Terapia Manual | Gimnasio Terapéutico
+      </p>
+      <p class="reveal glass-text mt-6 text-lg text-white/85">Elegís el tratamiento, el profesional y el horario. El pedido llega directo a su WhatsApp.</p>
+      <div class="reveal mt-10 flex flex-wrap items-center gap-6 sm:flex-row-reverse">
+        <a href="#equipo"
+          class="hidden min-h-12 cursor-pointer items-center rounded-xl bg-accent px-5 text-base sm:inline-flex font-semibold text-ink shadow-[0_0_28px_rgb(159_214_192/0.5)] ring-1 ring-white/50 transition-all duration-700 ease-fluid hover:scale-105 hover:shadow-[0_0_44px_rgb(159_214_192/0.8)] active:scale-95 sm:min-h-14 sm:px-8 sm:text-lg"
+          >Pedir turno</a
+        >
+      </div>
+    </div>
+    <!-- en celular queda arriba del botón fijo (#cta-bar) -->
+    <a
+      href="#tratamientos"
+      aria-label="Seguir bajando"
+      class="absolute bottom-28 left-1/2 flex size-12 -translate-x-1/2 items-center justify-center rounded-full border border-white/30 bg-ink/40 text-white backdrop-blur-md transition-colors hover:border-accent hover:text-accent sm:bottom-8 motion-safe:animate-bounce"
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+    </a>
+  </section>
+
+  <!-- TRATAMIENTOS -->
+  <section id="tratamientos" class="scroll-mt-24 px-4 py-16 sm:py-24">
+    <div class="mx-auto max-w-5xl">
+      <h2 class="reveal glass-text text-4xl font-semibold">Tratamientos</h2>
+      <ul class="mt-8 sm:mt-12 grid gap-4 sm:grid-cols-2">
+        {treatments.map((s, n) => (
+          <li class:list={['reveal glass-text rounded-2xl border border-white/25 bg-ink/30 p-5 transition-all sm:col-span-2 sm:p-6 duration-700 ease-fluid hover:-translate-y-1 hover:border-accent/60', s.img && 'sm:flex sm:items-center sm:gap-8', s.img && n % 2 === 0 && 'sm:flex-row-reverse']}>
+            <div class="min-w-0 flex-1">
+            <h3 class="text-xl font-semibold">{s.t}</h3>
+            {s.sub && <p class="mt-2 text-base font-semibold">{s.sub}</p>}
+            {s.d && <p class="mt-2 text-base text-white/85">{s.d}</p>}
+            {s.lead && <p class="mt-2 text-base text-white/85">{s.lead}</p>}
+            {s.items && (
+              <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-white/85 marker:text-accent">
+                {s.items.map((i) => <li>{i}</li>)}
+              </ul>
+            )}
+            {s.after && <p class="mt-2 text-base text-white/85">{s.after}</p>}
+            </div>
+            {s.img && (
+              <img src={s.img} alt={s.alt} width="800" height="540" loading="lazy" data-zoom class:list={['mt-4 h-48 w-full cursor-zoom-in rounded-xl sm:mt-0 sm:h-64 sm:w-80 sm:shrink-0', s.photo ? 'object-cover' : 'bg-white object-contain']} />
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ESPACIO -->
+  <section class="px-4 py-16 sm:py-24" aria-labelledby="espacio-t">
+    <div class="mx-auto max-w-5xl">
+      <h2 id="espacio-t" class="reveal glass-text text-4xl font-semibold">El espacio</h2>
+      <ul class="mt-8 sm:mt-12 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3">
+        {space.map((p) => (
+          <li class="reveal overflow-hidden rounded-2xl border border-white/20">
+            <img src={p.src} alt={p.alt} width="900" height="1600" loading="lazy" data-zoom class="aspect-[3/4] w-full cursor-zoom-in object-cover" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- EQUIPO -->
+  <section id="equipo" class="scroll-mt-24 px-4 py-16 sm:py-24">
+    <div class="mx-auto max-w-5xl">
+      <div class="grid gap-4 sm:grid-cols-2">
+        {team.map((p) => (
+          <a
+            href={`https://wa.me/${p.wa}?text=${encodeURIComponent(`Hola ${p.first}, quisiera pedir un turno.`)}`}
+            target="_blank"
+            rel="noopener"
+            class="group reveal glass-text flex flex-col rounded-2xl border border-white/25 bg-ink/30 p-6 transition-all duration-700 ease-fluid hover:-translate-y-1 hover:border-accent/60"
+          >
+            <p class="font-display text-3xl sm:text-4xl">{p.name}</p>
+            <p class="mt-2 text-base text-white/85">{p.title}</p>
+            <p class="text-sm text-accent">{p.mat}</p>
+            {p.lines && (
+              <div class="mt-4 space-y-2 text-base font-semibold text-white/90">
+                {p.lines.map((t) => <p>{t}</p>)}
+              </div>
+            )}
+            {p.bio && (
+              <div class="mt-4 space-y-3 text-sm text-white/85">
+                {p.bio.h && <p class="text-base font-semibold">{p.bio.h}</p>}
+                {p.bio.p.map((t) => <p>{t}</p>)}
+                <p class="pt-1 text-base font-semibold">{p.bio.area.h}</p>
+                {p.bio.area.p.map((t) => <p>{t}</p>)}
+              </div>
+            )}
+            <p class="mt-3 text-sm text-white/80">{coverageNote}</p>
+            {p.own && p.own.split('\n').map((t) => <p class="mt-2 text-sm text-white/80">{t}</p>)}
+            <span class="mt-auto pt-6">
+              <span class="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent px-5 text-base font-semibold text-ink [text-shadow:none] shadow-[0_0_28px_rgb(159_214_192/0.5)] ring-1 ring-white/50 transition-all duration-700 ease-fluid group-hover:shadow-[0_0_44px_rgb(159_214_192/0.8)] group-active:scale-95">
+                Pedir turno con {p.first} por WhatsApp
+                <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5 transition-transform duration-700 ease-fluid group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </span>
+              <span class="mt-2 block text-center text-sm text-white/70">{p.phone}</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="preguntas" class="scroll-mt-24 px-4 py-16 sm:py-24">
+    <div class="mx-auto max-w-[680px]">
+      <h2 class="reveal glass-text text-4xl font-semibold">Preguntas frecuentes</h2>
+      <div class="mt-8 sm:mt-12 flex flex-col gap-3">
+        {faq.map((f) => (
+          <details class="reveal glass-text rounded-2xl border border-white/25 bg-ink/30 px-4 py-4 open:bg-ink/60 sm:px-6">
+            <summary class="cursor-pointer list-none text-base sm:text-lg font-semibold">{f.q}</summary>
+            <p class="mt-3 text-base text-white/85">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CIERRE: llegamos a la recepción -->
+  <section class="flex min-h-svh items-end px-4 pt-16 pb-16 sm:pt-24 sm:pb-24">
+    <div class="reveal glass-text mx-auto w-full max-w-5xl rounded-2xl border border-white/25 bg-ink/30 p-8 text-center sm:p-16">
+      <p class="font-display text-3xl italic text-accent">Bienvenido a Somatic</p>
+      <h2 class="mx-auto mt-2 max-w-[680px] text-4xl font-semibold">Te esperamos en la recepción</h2>
+      <a href="#equipo"
+        class="mt-8 inline-flex min-h-11 cursor-pointer items-center rounded-lg bg-accent px-4 text-base font-semibold text-ink [text-shadow:none] transition-all duration-700 ease-fluid hover:scale-105 active:scale-95"
+        >Pedir turno</a
+      >
+    </div>
+  </section>
+
+</Base>
+
+<script>
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }
+      }
+    },
+    { threshold: 0.15 },
+  );
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+  // click en una foto: crece desde su lugar hasta el centro; otro click (o Escape) la devuelve
+  const rect = (r: DOMRect) => ({ left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+  document.querySelectorAll<HTMLImageElement>('[data-zoom]').forEach((img) =>
+    img.addEventListener('click', () => {
+      const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450;
+      const opts = { duration, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'both' } as const;
+      const ar = img.naturalWidth / img.naturalHeight;
+      const w = Math.min(innerWidth * 0.92, innerHeight * 0.88 * ar);
+      const to = new DOMRect((innerWidth - w) / 2, (innerHeight - w / ar) / 2, w, w / ar);
+
+      const veil = document.createElement('div');
+      veil.className = 'fixed inset-0 z-[60] cursor-zoom-out bg-black/80 backdrop-blur-sm';
+      const big = new Image();
+      big.src = img.currentSrc || img.src;
+      big.alt = img.alt;
+      big.className = 'fixed z-[61] cursor-zoom-out rounded-2xl object-cover';
+      Object.assign(big.style, rect(to));
+      document.body.append(veil, big);
+      img.style.visibility = 'hidden';
+      veil.animate({ opacity: [0, 1] }, opts);
+      big.animate([rect(img.getBoundingClientRect()), rect(to)], opts);
+
+      let closing = false;
+      const close = () => {
+        if (closing) return;
+        closing = true;
+        removeEventListener('keydown', onKey);
+        veil.animate({ opacity: [1, 0] }, opts);
+        big.animate([rect(to), rect(img.getBoundingClientRect())], opts).onfinish = () => {
+          veil.remove();
+          big.remove();
+          img.style.visibility = '';
+        };
+      };
+      const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
+      addEventListener('keydown', onKey);
+      veil.addEventListener('click', close);
+      big.addEventListener('click', close);
+    }),
+  );
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (n: number, a = 0, b = 1) => Math.min(Math.max(n, a), b);
+  let queued = false;
+  const hero = document.getElementById('hero-text')!;
+  const scrub = () => {
+    queued = false;
+    const vh = innerHeight;
+
+    // el texto del inicio se difumina hacia la derecha en la primera pantalla de scroll
+    const h = clamp(scrollY / (vh * 0.7));
+    hero.style.opacity = String(1 - h);
+    hero.style.transform = reduce ? '' : `translateX(${(h * 30).toFixed(2)}vw)`;
+    hero.style.filter = reduce || !h ? '' : `blur(${(h * 12).toFixed(1)}px)`;
+  };
+  addEventListener('scroll', () => {
+    if (!queued) {
+      queued = true;
+      requestAnimationFrame(scrub);
+    }
+  }, { passive: true });
+  scrub();
+</script>

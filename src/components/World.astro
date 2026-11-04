@@ -1,0 +1,185 @@
+---
+// Recorrido atado al scroll: de la vereda, de costado, hasta la recepción.
+// Escritorio: un MP4 horizontal (recortado de las tomas verticales en 4K) cuyo currentTime sigue al scroll.
+// Móvil/tablet: secuencia de WebP vertical dibujada en canvas (el seek continuo de video falla en teléfonos).
+---
+
+<div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-ink" aria-hidden="true">
+  <video
+    id="world-video"
+    class="absolute inset-0 h-full w-full object-cover"
+    poster="/video/poster.jpg"
+    muted
+    playsinline
+    disablepictureinpicture
+  ></video>
+  <canvas id="world-canvas" class="absolute inset-0 hidden h-full w-full"></canvas>
+  <div class="absolute inset-0 bg-ink/55"></div>
+</div>
+
+<!-- celular: tapa la página hasta que el recorrido de fondo cargó lo suficiente para no trabarse al bajar -->
+<div id="world-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-ink transition-opacity duration-700 lg:hidden" role="status" aria-label="Cargando">
+  <div class="flex flex-col items-center leading-none">
+    <span class="text-5xl font-semibold tracking-[0.2em] sm:text-6xl">SOMATIC</span>
+    <span class="mt-2 text-sm tracking-[0.35em] text-accent sm:text-base">kinesiología</span>
+    <div class="mt-8 h-1 w-48 overflow-hidden rounded-full bg-white/15 sm:w-64">
+      <div id="world-bar" class="h-full w-full origin-left scale-x-0 rounded-full bg-accent transition-transform duration-300 ease-out"></div>
+    </div>
+  </div>
+</div>
+<noscript><style>#world-loader{display:none}</style></noscript>
+
+<script>
+  const video = document.getElementById('world-video') as HTMLVideoElement;
+  const canvas = document.getElementById('world-canvas') as HTMLCanvasElement;
+  const loader = document.getElementById('world-loader')!;
+  const bar = document.getElementById('world-bar')!;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const desktop = matchMedia('(min-width: 1024px)').matches;
+  const FRAMES = 300;
+
+  const progress = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    return max > 0 ? Math.min(Math.max(scrollY / max, 0), 1) : 0;
+  };
+
+  // `step` recibe el progreso 0..1 y devuelve true si todavía debe seguir animando
+  let queued = false;
+  const loop = (step: (p: number) => boolean) => {
+    const run = () => {
+      queued = false;
+      if (step(progress())) {
+        queued = true;
+        requestAnimationFrame(run);
+      }
+    };
+    const kick = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(run);
+      }
+    };
+    addEventListener('scroll', kick, { passive: true });
+    addEventListener('resize', kick);
+    kick();
+    return kick;
+  };
+
+  if (desktop) {
+    loader.remove();
+    video.src = '/video/scroll.mp4';
+    video.preload = 'auto';
+    let current = 0;
+    const kick = loop((p) => {
+      if (!video.duration) return false;
+      const target = p * (video.duration - 0.05);
+      const diff = target - current;
+      // más inercia = movimiento más suave; no se pide otro cuadro hasta que el anterior terminó de decodificar
+      current = reduce || Math.abs(diff) < 0.005 ? target : current + diff * 0.07;
+      if (video.readyState >= 2 && !video.seeking && Math.abs(video.currentTime - current) > 1 / 60) {
+        video.currentTime = current;
+      }
+      return current !== target || video.seeking;
+    });
+    video.addEventListener('loadedmetadata', kick);
+    video.load();
+  } else {
+    video.remove();
+    canvas.classList.remove('hidden');
+    const ctx = canvas.getContext('2d')!;
+    const imgs: (HTMLImageElement | undefined)[] = new Array(FRAMES);
+    let current = 0;
+    let shown = -1;
+
+    const size = () => {
+      if (canvas.width !== innerWidth || canvas.height !== innerHeight) {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        shown = -1;
+      }
+    };
+
+    // el cuadro más cercano que ya cargó, para no mostrar huecos mientras bajan las imágenes
+    const nearest = (i: number) => {
+      for (let d = 0; d < FRAMES; d++) {
+        const a = imgs[i - d];
+        if (a) return a;
+        const b = imgs[i + d];
+        if (b) return b;
+      }
+    };
+
+    const paint = (img: HTMLImageElement, alpha: number) => {
+      const s = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      const w = img.naturalWidth * s;
+      const h = img.naturalHeight * s;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+    };
+
+    // posición fraccionaria: se funde el cuadro siguiente encima para que no se note el salto entre imágenes
+    const draw = (pos: number) => {
+      const i = Math.floor(pos);
+      const a = nearest(i);
+      if (!a) return;
+      paint(a, 1);
+      const b = imgs[i + 1];
+      if (b && pos > i) paint(b, pos - i);
+    };
+
+    size();
+    const kick = loop((p) => {
+      size();
+      const target = p * (FRAMES - 1);
+      const diff = target - current;
+      current = reduce || Math.abs(diff) < 0.01 ? target : current + diff * 0.1;
+      if (Math.abs(current - shown) > 0.01) {
+        shown = current;
+        draw(current);
+      }
+      return current !== target;
+    });
+
+    // primero un cuadro cada STRIDE para cubrir todo el recorrido (así bajar rápido nunca deja el fondo congelado), después se rellenan los de en medio
+    const STRIDE = 6;
+    const order = [
+      ...Array.from({ length: FRAMES }, (_, i) => i).filter((i) => i % STRIDE === 0),
+      ...Array.from({ length: FRAMES }, (_, i) => i).filter((i) => i % STRIDE !== 0),
+    ];
+    const coarseTotal = Math.ceil(FRAMES / STRIDE);
+    let coarse = 0;
+    let done = false;
+    const ready = () => {
+      if (done) return;
+      done = true;
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 700);
+    };
+    // si la conexión es muy lenta no dejar la página tapada para siempre
+    setTimeout(ready, 8000);
+    let next = 0;
+    const pump = () => {
+      if (next >= FRAMES) return;
+      const i = order[next++];
+      const img = new Image();
+      img.onload = img.onerror = async () => {
+        if (img.naturalWidth) {
+          // decodificar acá y no en el primer drawImage, que es lo que trababa el scroll
+          await img.decode().catch(() => {});
+          imgs[i] = img;
+          if (Math.abs(i - Math.round(current)) < STRIDE) {
+            shown = -1;
+            kick();
+          }
+        }
+        if (i % STRIDE === 0) {
+          bar.style.transform = `scaleX(${++coarse / coarseTotal})`;
+          if (coarse === coarseTotal) ready();
+        }
+        pump();
+      };
+      img.src = `/frames/m_${String(i + 1).padStart(3, '0')}.webp`;
+    };
+    for (let k = 0; k < 6; k++) pump();
+  }
+</script>
